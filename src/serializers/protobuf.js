@@ -70,12 +70,12 @@ class ProtoBufSerializer extends BaseSerializer {
 
 		switch(type) {
 			case P.PACKET_REQUEST: {
-				if (!obj.stream)
+				if (!Buffer.isBuffer(obj.params))
 					obj.params = Buffer.from(obj.params);
 				break;
 			}
 			case P.PACKET_RESPONSE: {
-				if (obj.data && !obj.stream)
+				if (obj.data && !Buffer.isBuffer(obj.data))
 					obj.data = Buffer.from(obj.data);
 				break;
 			}
@@ -95,12 +95,12 @@ class ProtoBufSerializer extends BaseSerializer {
 	deserializeCustomFields(type, obj) {
 		switch(type) {
 			case P.PACKET_REQUEST: {
-				if (!obj.stream)
+				if (!Buffer.isBuffer(obj.params))
 					obj.params = obj.params.toString("utf8");
 				break;
 			}
 			case P.PACKET_RESPONSE: {
-				if (obj.data && !obj.stream) {
+				if (obj.data && !Buffer.isBuffer(obj.data)) {
 					if (obj.data.length)
 						obj.data = obj.data.toString("utf8");
 					else

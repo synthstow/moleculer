@@ -13,7 +13,7 @@ describe("Test ThriftSerializer constructor", () => {
 	});
 });
 
-describe("Test ProtoBuf serializer", () => {
+describe("Test Thrift serializer", () => {
 
 	const serializer = new ThriftSerializer();
 	serializer.init();
@@ -187,6 +187,35 @@ describe("Test ProtoBuf serializer", () => {
 			metrics: true,
 			parentID: "999",
 			requestID: "12345",
+			stream: false
+		};
+
+		const s = serializer.serialize(cloneDeep(obj), P.PACKET_REQUEST);
+		expect(s.length).toBe(157);
+
+		const res = serializer.deserialize(s, P.PACKET_REQUEST);
+		expect(res).not.toBe(obj);
+		expect(res).toEqual(obj);
+	});
+
+	it("should serialize the request packet with buffer & streaming", () => {
+		const obj = {
+			ver: "3",
+			sender: "test-1",
+			id: "100",
+			action: "posts.find",
+			params: Buffer.from("binary data"),
+			meta: {
+				user: {
+					id: 1,
+					roles: [ "admin" ]
+				}
+			},
+			timeout: 1500,
+			level: 4,
+			metrics: true,
+			parentID: "999",
+			requestID: "12345",
 			stream: true
 		};
 
@@ -225,6 +254,29 @@ describe("Test ProtoBuf serializer", () => {
 	});
 
 	it("should serialize the response packet with buffer data", () => {
+		const obj = {
+			ver: "3",
+			sender: "test-1",
+			id: "12345",
+			success: true,
+			data: Buffer.from("binary data"),
+			meta: {
+				user: {
+					id: 1,
+					roles: [ "admin" ]
+				}
+			},
+			stream: false
+		};
+		const s = serializer.serialize(cloneDeep(obj), P.PACKET_RESPONSE);
+		expect(s.length).toBe(102);
+
+		const res = serializer.deserialize(s, P.PACKET_RESPONSE);
+		expect(res).not.toBe(obj);
+		expect(res).toEqual(Object.assign(obj, { error: null }));
+	});
+
+	it("should serialize the response packet with buffer data & streaming", () => {
 		const obj = {
 			ver: "3",
 			sender: "test-1",
@@ -317,7 +369,7 @@ describe("Test ProtoBuf serializer", () => {
 
 });
 
-describe("Test ProtoBuf serializer with Gossip packets", () => {
+describe("Test Thrift serializer with Gossip packets", () => {
 
 	const serializer = new ThriftSerializer();
 	serializer.init();
