@@ -7,6 +7,8 @@
 "use strict";
 
 const BaseSerializer  	= require("./base");
+const P 				= require("../packets");
+
 /**
  * JSON serializer for Moleculer
  *
@@ -45,8 +47,28 @@ class JSONSerializer extends BaseSerializer {
 	 *
 	 * @memberof Serializer
 	 */
-	deserialize(buf) {
-		return JSON.parse(buf);
+	deserialize(buf, type) {
+		const obj = JSON.parse(buf);
+
+		switch(type) {
+			case P.PACKET_EVENT: {
+				if (this.isJSONBuffer(obj.data))
+					obj.data = Buffer.from(obj.data);
+				break;
+			}
+			case P.PACKET_REQUEST: {
+				if (this.isJSONBuffer(obj.params))
+					obj.params = Buffer.from(obj.params);
+				break;
+			}
+			case P.PACKET_RESPONSE: {
+				if (this.isJSONBuffer(obj.data))
+					obj.data = Buffer.from(obj.data);
+				break;
+			}
+		}
+
+		return obj;
 	}
 }
 

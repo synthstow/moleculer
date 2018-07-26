@@ -355,7 +355,7 @@ class Transit {
 					} else {
 						this.logger.debug(`Stream chunk is received from '${payload.sender}'.`);
 						// stream chunk received
-						pass.write(payload.params.type === "Buffer" ? new Buffer.from(payload.params.data):payload.params);
+						pass.write(payload.params.type === "Buffer" ? Buffer.from(payload.params.data):payload.params);
 
 						return;
 					}
@@ -466,7 +466,7 @@ class Transit {
 				} else {
 					// stream chunk
 					this.logger.debug(`Stream chunk is received from '${packet.sender}'`);
-					pass.write(packet.data.type === "Buffer" ? new Buffer.from(packet.data.data):packet.data);
+					pass.write(packet.data.type === "Buffer" ? Buffer.from(packet.data.data):packet.data);
 				}
 				return req.resolve(packet.data);
 

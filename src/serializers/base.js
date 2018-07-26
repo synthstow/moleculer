@@ -82,12 +82,13 @@ class Serializer {
 				break;
 			}
 			case P.PACKET_EVENT: {
+				// TODO: handle buffers, but Proto/Avro/Thrift type is "string" and not "bytes"
 				if (obj.data)
 					obj.data = JSON.stringify(obj.data);
 				break;
 			}
 			case P.PACKET_REQUEST: {
-				if (obj.stream)
+				if (Buffer.isBuffer(obj.params))
 					obj.params = obj.params;
 				else
 					obj.params = JSON.stringify(obj.params);
@@ -98,7 +99,7 @@ class Serializer {
 			case P.PACKET_RESPONSE: {
 				obj.meta = JSON.stringify(obj.meta);
 				if (obj.data) {
-					if (obj.stream)
+					if (Buffer.isBuffer(obj.data))
 						obj.data = obj.data;
 					else
 						obj.data = JSON.stringify(obj.data);
@@ -127,6 +128,17 @@ class Serializer {
 	}
 
 	/**
+	 * Check whether the `o` is a JSON buffer
+	 *
+	 * @param {Object} o
+	 * @returns {Boolean}
+	 * @memberof Serializer
+	 */
+	isJSONBuffer(o) {
+		return (o && typeof(o) === "object" && o.type === "Buffer" && o.data);
+	}
+
+	/**
 	 * Deserialize custom fields
 	 *
 	 * @param {String} type
@@ -148,8 +160,10 @@ class Serializer {
 				break;
 			}
 			case P.PACKET_REQUEST: {
-				if (obj.stream)
+				if (Buffer.isBuffer(obj.params))
 					obj.params = obj.params;
+				else if (this.isJSONBuffer(obj.params))
+					obj.params = Buffer.from(obj.params);
 				else
 					obj.params = JSON.parse(obj.params);
 
@@ -159,8 +173,10 @@ class Serializer {
 			case P.PACKET_RESPONSE: {
 				obj.meta = JSON.parse(obj.meta);
 				if (obj.data) {
-					if (obj.stream)
+					if (Buffer.isBuffer(obj.data))
 						obj.data = obj.data;
+					else if (this.isJSONBuffer(obj.data))
+						obj.data = Buffer.from(obj.data);
 					else
 						obj.data = JSON.parse(obj.data);
 				}
