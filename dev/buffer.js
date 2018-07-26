@@ -3,13 +3,13 @@
 const ServiceBroker = require("../src/service-broker");
 const Promise = require("bluebird");
 
-let serializer = null;
+let serializer = null; // YES
 
-// serializer = require('./serializer'); // NOPE
-// serializer = 'Avro'; // NOPE
+// serializer = "Avro"; // YES
 // serializer = "MsgPack"; // YES
-serializer = "ProtoBuf"; // NOPE
+// serializer = "ProtoBuf"; // NOPE
 // serializer = 'Thrift'; // NOPE
+// serializer = "Notepack"; // YES
 
 // Create server broker
 const server = new ServiceBroker({
