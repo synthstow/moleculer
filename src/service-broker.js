@@ -566,7 +566,7 @@ class ServiceBroker {
 			svc.__filename = fName;
 		}
 
-		if (this.options.hotReload) {
+		if (this.options.hotReload && !schema.donothotreload) { ///so I can choose to manually reload certain services without them hotreloading and breaking my system
 			this.watchService(svc || { __filename: fName, name: fName });
 		}
 
