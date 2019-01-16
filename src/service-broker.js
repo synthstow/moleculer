@@ -566,7 +566,7 @@ class ServiceBroker {
 			svc.__filename = fName;
 		}
 
-		if (this.options.hotReload) {
+		if (this.options.hotReload && !svc.schema.donthotreload) {
 			this.watchService(svc || { __filename: fName, name: fName });
 		}
 
@@ -580,7 +580,9 @@ class ServiceBroker {
 	 * @memberof ServiceBroker
 	 */
 	watchService(service) {
-		if (service.__filename) {
+		//console.log(service)
+		//console.log(service.schema.donthotreload)
+		if (service.__filename && !service.donthotreload) {
 			const debouncedHotReload = _.debounce(this.hotReloadService.bind(this), 500);
 
 			this.logger.debug(`Watching '${service.name}' service file...`);
@@ -1014,7 +1016,6 @@ class ServiceBroker {
 		}
 	}
 
-
 	/**
 	 * Emit an event (grouped & balanced global event)
 	 *
@@ -1046,7 +1047,7 @@ class ServiceBroker {
 				if (ep) {
 					if (ep.id == this.nodeID) {
 						// Local service, call handler
-						this.registry.events.callEventHandler(ep.event.handler, payload, this.nodeID, eventName);
+						ep.event.handler(payload, this.nodeID, eventName);
 					} else {
 						// Remote service
 						const e = groupedEP[ep.id];
