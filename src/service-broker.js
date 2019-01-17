@@ -106,6 +106,7 @@ const defaultOptions = {
 
 	// ServiceFactory: null,
 	// ContextFactory: null
+	storedinfo:{},
 };
 
 /**
@@ -230,6 +231,7 @@ class ServiceBroker {
 					.catch(err => this.logger.error(err))
 					.then(() => process.exit(0));
 			};
+			this.storedinfo = this.options.storedinfo || {}
 
 			process.setMaxListeners(0);
 			if ((this.options.skipProcessEventRegistration || false) !== true) {
